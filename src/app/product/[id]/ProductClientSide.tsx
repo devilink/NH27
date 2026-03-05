@@ -1,14 +1,21 @@
 'use client';
 
 import { Product, useStore } from '@/lib/store';
-import { ShoppingBag, Star, ShieldCheck, RefreshCcw } from 'lucide-react';
+import { ShoppingBag, Star, ShieldCheck, RefreshCcw, Heart } from 'lucide-react';
 import Image from 'next/image';
 import RelatedProducts from '@/components/product/RelatedProducts';
 import { useEffect, useState } from 'react';
 
 export default function ProductClientSide({ product, relatedProducts }: { product: Product, relatedProducts: Product[] }) {
     const addToCart = useStore((state) => state.addToCart);
+    const wishlistItems = useStore((state) => state.wishlistItems);
+    const toggleWishlist = useStore((state) => state.toggleWishlist);
     const setCursorVariant = useStore((state) => state.setCursorVariant);
+
+    const isWishlisted = wishlistItems.some(item => item.id === product.id);
+
+    // Initial selected image is the main img, or the first in images array if it exists.
+    const [selectedImage, setSelectedImage] = useState(product.images?.[0] || product.img);
 
     // Simple mount animation state
     const [mounted, setMounted] = useState(false);
@@ -25,16 +32,39 @@ export default function ProductClientSide({ product, relatedProducts }: { produc
         <div className="pt-32 pb-24 px-6 md:px-12 max-w-[1400px] mx-auto min-h-screen">
             <div className={`grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
 
-                {/* Product Image */}
-                <div className="relative aspect-[4/5] bg-[var(--bg-secondary)] overflow-hidden group w-full max-h-[80vh]">
-                    <Image
-                        src={product.img}
-                        alt={product.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-[2000ms]"
-                        priority
-                    />
-                    <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-1000"></div>
+                {/* Product Image Section */}
+                <div className="flex flex-col gap-4 w-full">
+                    {/* Main Image */}
+                    <div className="relative aspect-[4/5] bg-[var(--bg-secondary)] overflow-hidden group w-full max-h-[80vh]">
+                        <Image
+                            src={selectedImage}
+                            alt={product.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-[2000ms]"
+                            priority
+                        />
+                        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-1000"></div>
+                    </div>
+
+                    {/* Image Thumbnails (only render if there are multiple images) */}
+                    {product.images && product.images.length > 1 && (
+                        <div className="grid grid-cols-4 gap-4 mt-2">
+                            {product.images.map((imgUrl, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setSelectedImage(imgUrl)}
+                                    className={`relative aspect-square overflow-hidden bg-[var(--bg-secondary)] border-2 transition-all ${selectedImage === imgUrl ? 'border-[var(--gold)] opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                                >
+                                    <Image
+                                        src={imgUrl}
+                                        alt={`${product.name} thumbnail ${idx + 1}`}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Product Details */}
@@ -58,15 +88,21 @@ export default function ProductClientSide({ product, relatedProducts }: { produc
                     </div>
 
                     <div className="space-y-6 font-sans text-sm md:text-base text-[var(--text-secondary)] leading-relaxed mb-12">
-                        <p>
-                            Meticulously crafted to perfection, the {product.name} embodies the zenith of modern luxury.
-                            Designed for individuals who appreciate silence over noise, this piece stands as a testament
-                            to uncompromising quality and timeless elegance.
-                        </p>
-                        <p>
-                            Every detail, from the material selection to the final polish, is executed with absolute precision
-                            by master artisans.
-                        </p>
+                        {product.description ? (
+                            <p className="whitespace-pre-line">{product.description}</p>
+                        ) : (
+                            <>
+                                <p>
+                                    Meticulously crafted to perfection, the {product.name} embodies the zenith of modern luxury.
+                                    Designed for individuals who appreciate silence over noise, this piece stands as a testament
+                                    to uncompromising quality and timeless elegance.
+                                </p>
+                                <p>
+                                    Every detail, from the material selection to the final polish, is executed with absolute precision
+                                    by master artisans.
+                                </p>
+                            </>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-8 mb-12 bg-[var(--bg-secondary)] p-8 rounded-sm">
@@ -86,14 +122,24 @@ export default function ProductClientSide({ product, relatedProducts }: { produc
                         </div>
                     </div>
 
-                    <button
-                        onClick={() => addToCart(product)}
-                        {...withCursor('big')}
-                        className="w-full flex items-center justify-center gap-4 bg-[var(--text-primary)] text-[var(--bg-primary)] py-5 uppercase font-sans text-sm tracking-[0.2em] hover:bg-[var(--gold)] transition-colors group"
-                    >
-                        <ShoppingBag size={20} className="group-hover:-translate-y-1 transition-transform" />
-                        <span className="font-bold">Add To Collection</span>
-                    </button>
+                    <div className="flex gap-4">
+                        <button
+                            onClick={() => addToCart(product)}
+                            {...withCursor('big')}
+                            className="flex-1 flex items-center justify-center gap-4 bg-[var(--text-primary)] text-[var(--bg-primary)] py-5 uppercase font-sans text-sm tracking-[0.2em] hover:bg-[var(--gold)] hover:text-black transition-colors group"
+                        >
+                            <ShoppingBag size={20} className="group-hover:-translate-y-1 transition-transform" />
+                            <span className="font-bold">Add To Collection</span>
+                        </button>
+                        <button
+                            onClick={() => toggleWishlist(product)}
+                            {...withCursor('big')}
+                            className={`w-16 flex items-center justify-center border border-[var(--border)] py-5 transition-colors group hover:border-red-500 ${isWishlisted ? 'bg-red-500 border-red-500 text-white' : 'text-[var(--text-primary)]'}`}
+                            title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+                        >
+                            <Heart size={20} className={isWishlisted ? "fill-current" : ""} />
+                        </button>
+                    </div>
 
                     <div className="mt-8 text-center">
                         <span className="font-sans text-xs text-[var(--text-secondary)] tracking-widest uppercase block mb-2">Complimentary Global Shipping</span>

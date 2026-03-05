@@ -9,8 +9,48 @@ import Loader from "@/components/layout/Loader";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "NH27 Outfits | Bespoke Luxury",
-  description: "The Art of Masculinity. Curated essentials and luxurious timepieces.",
+  title: {
+    template: "%s | NH27 Outfits",
+    default: "NH27 Outfits | Bespoke Luxury & Modern Essentials",
+  },
+  description: "Experience the art of masculinity with NH27 Outfits. Discover our curated collection of luxury timepieces, exclusive footwear, and premium apparel designed for the modern gentleman.",
+  keywords: ["Luxury Menswear", "Designer Watches", "Premium Footwear", "Men's Fashion", "NH27 Outfits", "Bespoke Clothing"],
+  authors: [{ name: "NH27" }],
+  creator: "NH27 Outfits",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://nh27-outfits.com",
+    title: "NH27 Outfits | Bespoke Luxury",
+    description: "The Art of Masculinity. Curated essentials and luxurious timepieces.",
+    siteName: "NH27 Outfits",
+    images: [
+      {
+        url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2938&auto=format&fit=crop",
+        width: 1200,
+        height: 630,
+        alt: "NH27 Outfits Luxury Lifestyle",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NH27 Outfits | Bespoke Luxury",
+    description: "The Art of Masculinity. Curated essentials and luxurious timepieces.",
+    creator: "@nh27outfits",
+    images: ["https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2938&auto=format&fit=crop"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({

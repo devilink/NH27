@@ -5,6 +5,7 @@ import { useStore } from '@/lib/store';
 import { ArrowLeft, ArrowRight, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { products } from '@/lib/data';
+import { motion } from 'framer-motion';
 
 export default function HorizontalCarousel() {
     const carouselRef = useRef<HTMLDivElement>(null);
@@ -38,9 +39,17 @@ export default function HorizontalCarousel() {
                 className="flex space-x-8 px-6 md:px-12 overflow-x-auto pb-12 hide-scrollbar snap-x snap-mandatory"
             >
                 {products.map((item, idx) => (
-                    <div key={item.id} className="min-w-[320px] md:min-w-[420px] snap-center group relative cursor-pointer" {...withCursor('big')}>
+                    <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, x: 50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{ duration: 0.6, delay: Math.min(idx * 0.1, 0.5) }}
+                        className="min-w-[320px] md:min-w-[420px] snap-center group relative cursor-pointer"
+                        {...withCursor('big')}
+                    >
                         <div className="bg-[var(--bg-secondary)] aspect-[4/5] overflow-hidden relative">
-                            <Image src={item.img} fill className="object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100" alt={item.name} />
+                            <Image src={item.img} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100" alt={item.name} />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-80 pointer-events-none"></div>
 
                             <button
@@ -56,7 +65,7 @@ export default function HorizontalCarousel() {
                                 <p className="font-sans text-sm text-gray-300">${item.price.toFixed(2)}</p>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
         </section>

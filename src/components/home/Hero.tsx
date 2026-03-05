@@ -3,6 +3,7 @@
 import { ArrowRight } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 export default function Hero() {
     const setCursorVariant = useStore((state) => state.setCursorVariant);
@@ -26,18 +27,35 @@ export default function Hero() {
 
             <div className="relative z-10 text-center px-4 mt-20 pointer-events-none">
                 <div className="pointer-events-auto inline-block">
-                    <p className="font-sans text-xs tracking-[0.4em] text-[var(--gold)] mb-6 uppercase">Est. 2026 • Bespoke Luxury</p>
-                    <h1 className="font-serif text-6xl md:text-[9rem] text-[var(--text-primary)] leading-none mb-6 mix-blend-difference">
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 1, delay: 0.2 }}
+                        className="font-sans text-xs tracking-[0.4em] text-[var(--gold)] mb-6 uppercase"
+                    >
+                        Est. 2026 • Bespoke Luxury
+                    </motion.p>
+                    <motion.h1
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 1.2, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        className="font-serif text-6xl md:text-[9rem] text-[var(--text-primary)] leading-none mb-6 mix-blend-difference"
+                    >
                         <span className="block italic font-light drop-shadow-md">The Art of</span>
                         <span className="block font-bold drop-shadow-md">Masculinity</span>
-                    </h1>
-                    <div className="mt-12">
+                    </motion.h1>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1, delay: 1 }}
+                        className="mt-12"
+                    >
                         <Link href="/shop" {...withCursor()} className="group relative inline-flex items-center gap-3 font-sans text-sm tracking-widest uppercase text-[var(--text-primary)] mix-blend-difference">
                             <span className="relative z-10 hover:text-[var(--gold)] transition-colors font-bold drop-shadow-md">Explore Collection</span>
                             <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform drop-shadow-md" />
                             <span className="absolute -bottom-2 left-0 w-full h-[1px] bg-[var(--gold)] origin-right transform scale-x-0 transition-transform duration-500 group-hover:scale-x-100 group-hover:origin-left"></span>
                         </Link>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
 

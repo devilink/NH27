@@ -2,18 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, X } from 'lucide-react';
+import { ShoppingBag, X, Heart } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/nextjs";
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const cartCount = useStore((state) => state.cartCount);
+    const wishlistCount = useStore((state) => state.wishlistCount);
     const setIsCartOpen = useStore((state) => state.setIsCartOpen);
     const setCursorVariant = useStore((state) => state.setCursorVariant);
     const isMobileMenuOpen = useStore((state) => state.isMobileMenuOpen);
     const setIsMobileMenuOpen = useStore((state) => state.setIsMobileMenuOpen);
+    const { user } = useUser();
 
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -61,9 +63,16 @@ export default function Navbar() {
                 <Link href="/" {...withCursor()} className="font-serif text-2xl font-bold tracking-widest text-[var(--text-primary)]">NH27 Outfits</Link>
 
                 <div className="hidden md:flex space-x-12 font-sans text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">
+                    <Link href="/" {...withCursor()} className="hover:text-[var(--gold)] transition-colors">Home</Link>
                     <Link href="/shop" {...withCursor()} className="hover:text-[var(--gold)] transition-colors">Shop</Link>
                     <Link href="/category" {...withCursor()} className="hover:text-[var(--gold)] transition-colors">Categories</Link>
                     <Link href="/about" {...withCursor()} className="hover:text-[var(--gold)] transition-colors">About</Link>
+                    {user?.primaryEmailAddress?.emailAddress === 'princedas000555@gmail.com' && (
+                        <Link href="/admin" {...withCursor()} className="hover:text-[var(--gold)] text-[var(--gold)] transition-colors flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--gold)] animate-pulse inline-block"></span>
+                            Admin
+                        </Link>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-6">
@@ -84,6 +93,14 @@ export default function Navbar() {
                             }}
                         />
                     </SignedIn>
+                    <Link href="/wishlist" {...withCursor()} className="relative text-[var(--text-primary)] hover:text-red-500 transition-colors">
+                        <Heart size={20} className={wishlistCount > 0 ? "fill-current text-red-500" : ""} strokeWidth={1.5} />
+                        {wishlistCount > 0 && (
+                            <span className="absolute -top-2 -right-2 w-4 h-4 bg-[var(--gold)] text-black text-[10px] flex items-center justify-center rounded-full font-sans font-bold">
+                                {wishlistCount}
+                            </span>
+                        )}
+                    </Link>
                     <button onClick={() => setIsCartOpen(true)} {...withCursor()} className="relative text-[var(--text-primary)] hover:text-[var(--gold)] transition-colors">
                         <ShoppingBag size={20} strokeWidth={1.5} />
                         {cartCount > 0 && (
@@ -115,9 +132,13 @@ export default function Navbar() {
                 </div>
 
                 <div className="flex flex-col gap-8 items-center justify-center flex-1">
+                    <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="font-serif text-4xl hover:text-[var(--gold)] transition-colors">Home</Link>
                     <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="font-serif text-4xl hover:text-[var(--gold)] transition-colors">Shop</Link>
                     <Link href="/category" onClick={() => setIsMobileMenuOpen(false)} className="font-serif text-4xl hover:text-[var(--gold)] transition-colors">Categories</Link>
                     <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="font-serif text-4xl hover:text-[var(--gold)] transition-colors">About</Link>
+                    {user?.primaryEmailAddress?.emailAddress === 'princedas000555@gmail.com' && (
+                        <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="font-serif text-4xl hover:text-[var(--gold)] text-[var(--gold)] transition-colors">Admin Area</Link>
+                    )}
                 </div>
             </div>
         </>
